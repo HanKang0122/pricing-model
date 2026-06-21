@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商品定价模型 - 零壹经营体</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --bg2: #ffffff;
+    --ink: #1f2329;
+    --muted: #8f959e;
+    --rule: #e5e6eb;
+    --accent: #3370ff;
+    --accent2: #34d399;
+    --danger: #f54a45;
+    --warning: #f6ad55;
+    --success: #34d399;
+    --header-bg: #e1eaff;
+    --hover-bg: #f2f3f5;
+    --font-body: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 14px;
+  }
+  .app-header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--rule);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .app-header h1 { font-size: 20px; font-weight: 700; color: var(--ink); }
+  .app-header .subtitle { font-size: 12px; color: var(--muted); margin-left: 12px; }
+  .header-actions { display: flex; gap: 8px; }
+  .sheet-tabs {
+    display: flex;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--rule);
+    padding: 0 24px;
+    overflow-x: auto;
+    gap: 2px;
+  }
+  .sheet-tab {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+    position: relative;
+    border-radius: 6px 6px 0 0;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sheet-tab:hover { background: var(--hover-bg); color: var(--ink); }
+  .sheet-tab.active { background: var(--bg); color: var(--accent); font-weight: 600; }
+  .sheet-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+  }
+  .sheet-tab .tab-close {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .sheet-tab:hover .tab-close { opacity: 1; }
+  .sheet-tab .tab-close:hover { background: var(--danger); color: #fff; }
+  .sheet-tab.add-sheet { color: var(--accent); font-weight: 600; }
+  .sheet-tab.add-sheet:hover { background: #e8f1ff; }
+  .main-content { padding: 20px 24px; max-width: 100%; overflow-x: auto; }
+  .spreadsheet-container {
+    background: var(--bg2);
+    border-radius: 8px;
+    border: 1px solid var(--rule);
+    overflow: hidden;
+  }
+  .spreadsheet-grid { display: grid; font-size: 13px; min-width: 1400px; }
+  .cell {
+    padding: 6px 8px;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .cell.header { background: var(--header-bg); font-weight: 600; color: var(--ink); position: sticky; top: 0; z-index: 10; }
+  .cell.header-row { background: var(--header-bg); font-weight: 600; position: sticky; left: 0; z-index: 11; }
+  .cell.header.header-row { z-index: 12; }
+  .cell input, .cell select {
+    width: 100%; border: none; background: transparent;
+    text-align: center; font-size: 13px; outline: none;
+    font-family: var(--font-body); padding: 2px;
+  }
+  .cell input:focus { background: #e8f1ff; border-radius: 3px; }
+  .cell.formula-cell { background: #fffbe6; }
+  .cell.negative { color: var(--danger); font-weight: 600; }
+  .cell.positive { color: var(--success); font-weight: 600; }
+  .cell.highlight { color: var(--accent); font-weight: 600; }
+  .cell.roi-good { color: var(--success); font-weight: 600; }
+  .cell.roi-bad { color: var(--danger); font-weight: 600; }
+  .row-num {
+    background: var(--bg); color: var(--muted);
+    font-size: 11px; width: 40px;
+    justify-content: center;
+    position: sticky; left: 0; z-index: 5;
+  }
+  .btn {
+    padding: 8px 16px; border: none; border-radius: 6px;
+    cursor: pointer; font-size: 13px; font-weight: 500;
+    transition: all 0.15s; font-family: var(--font-body);
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #2860e0; }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--rule); }
+  .btn-ghost:hover { background: var(--hover-bg); color: var(--ink); }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+  .toolbar {
+    display: flex; gap: 8px; padding: 12px 24px;
+    background: var(--bg2); border-bottom: 1px solid var(--rule); align-items: center;
+  }
+  .toolbar-sep { width: 1px; height: 20px; background: var(--rule); margin: 0 4px; }
+  .modal-overlay {
+    display: none; position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4); z-index: 1000;
+    justify-content: center; align-items: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: var(--bg2); border-radius: 12px; padding: 24px;
+    width: 90%; max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+  .modal h3 { margin-bottom: 16px; font-size: 18px; }
+  .modal-body { margin-bottom: 20px; }
+  .modal-body input, .modal-body select {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--rule); border-radius: 6px;
+    font-size: 14px; margin-bottom: 12px; font-family: var(--font-body);
+  }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .data-table-container {
+    background: var(--bg2); border-radius: 8px;
+    border: 1px solid var(--rule); overflow: auto; max-height: 70vh;
+  }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th {
+    background: var(--header-bg); padding: 10px 12px;
+    text-align: center; font-weight: 600;
+    border: 1px solid var(--rule); position: sticky; top: 0; z-index: 10;
+  }
+  .data-table td {
+    padding: 8px 12px; border: 1px solid var(--rule); text-align: center;
+  }
+  .data-table td input, .data-table td select {
+    width: 100%; border: none; background: transparent;
+    text-align: center; font-size: 13px; outline: none; font-family: var(--font-body);
+  }
+  .data-table td input:focus { background: #e8f1ff; border-radius: 3px; }
+  .data-table tr:nth-child(even) { background: #fafbfc; }
+  .data-table tr:hover { background: var(--hover-bg); }
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--ink); color: #fff;
+    padding: 12px 20px; border-radius: 8px;
+    font-size: 13px; z-index: 2000;
+    opacity: 0; transform: translateY(20px); transition: all 0.3s;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .section-label {
+    grid-column: 1 / -1; background: #f0f4ff;
+    padding: 10px 16px; font-weight: 600;
+    color: var(--accent); border-bottom: 1px solid var(--rule); font-size: 14px;
+  }
+  @media (max-width: 768px) {
+    .app-header { flex-direction: column; gap: 8px; }
+    .main-content { padding: 12px; }
+    .spreadsheet-grid { min-width: 1000px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div style="display:flex;align-items:center;">
+    <h1>商品定价模型</h1>
+    <span class="subtitle">零壹经营体选品测算工具</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="exportData()">导出JSON</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">导入JSON</button>
+    <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(this)">
+    <button class="btn btn-primary" onclick="showAddProductModal()">+ 新增产品</button>
+  </div>
+</div>
+
+<div class="sheet-tabs" id="sheetTabs">
+  <button class="sheet-tab active" data-sheet="pricing" onclick="switchSheet('pricing')">定价模型</button>
+  <button class="sheet-tab" data-sheet="product-cost" onclick="switchSheet('product-cost')">产品成本表</button>
+  <button class="sheet-tab" data-sheet="package-cost" onclick="switchSheet('package-cost')">包装&快递成本</button>
+</div>
+
+<div class="toolbar" id="toolbar">
+  <button class="btn btn-primary btn-sm" onclick="addSKU()">+ 添加SKU</button>
+  <div class="toolbar-sep"></div>
+  <button class="btn btn-ghost btn-sm" onclick="duplicateLastSKU()">复制上一行</button>
+  <button class="btn btn-danger btn-sm" onclick="deleteSelectedSKU()">删除选中行</button>
+  <div class="toolbar-sep"></div>
+  <span style="color:var(--muted);font-size:12px;">提示: 点击单元格直接编辑，公式自动计算</span>
+</div>
+
+<div class="main-content" id="mainContent"></div>
+
+<div class="modal-overlay" id="addProductModal">
+  <div class="modal">
+    <h3>新增产品</h3>
+    <div class="modal-body">
+      <input type="text" id="newProductName" placeholder="请输入产品名称（如：玉米味鸡胸肉饼60g）">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('addProductModal')">取消</button>
+      <button class="btn btn-primary" onclick="confirmAddProduct()">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addSKUModal">
+  <div class="modal">
+    <h3>添加SKU规格</h3>
+    <div class="modal-body">
+      <input type="number" id="newSkuSpec" placeholder="SKU规格（件数）" value="1">
+      <input type="number" id="newSkuPrice" placeholder="售价（元）" value="19.9" step="0.01">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('addSKUModal')">取消</button>
+      <button class="btn btn-primary" onclick="confirmAddSKU()">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var STORAGE_KEY = 'pricing_model_spreadsheet_v2';
+var data = loadData();
+var currentSheet = 'pricing';
+var currentProductIndex = 0;
+var selectedRow = null;
+
+function loadData() {
+  try {
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return getDefaultData();
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getDefaultData() {
+  return {
+    products: [
+      {
+        name: '玉米味鸡胸肉饼60g',
+        skus: [
+          { spec: 10, price: 16.99, productCost: 12.00, packageCost: 0.42, expressCost: 1.96, operateCost: 0.75, commissionRate: 0.09, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 },
+          { spec: 20, price: 32.99, productCost: 24.00, packageCost: 0.61, expressCost: 3.02, operateCost: 0.75, commissionRate: 0.09, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 }
+        ]
+      },
+      {
+        name: '松茸芝麻盐80g',
+        skus: [
+          { spec: 1, price: 19.9, productCost: 4.82, packageCost: 0.31, expressCost: 1.75, operateCost: 0.75, commissionRate: 0.40, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 },
+          { spec: 2, price: 29.9, productCost: 9.64, packageCost: 0.31, expressCost: 1.75, operateCost: 0.75, commissionRate: 0.40, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 },
+          { spec: 3, price: 37.9, productCost: 14.46, packageCost: 0.35, expressCost: 1.75, operateCost: 0.75, commissionRate: 0.40, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 }
+        ]
+      }
+    ],
+    productCosts: [
+      { category: '肉食类', spu: '鸡胸肉饼60g', sku: '鸡胸肉饼60g-玉米味', code: '11010014758-0', createCost: 1.20, costAfter: 1.20, costBefore: 2.00, rebateRate: 0.40 },
+      { category: '调味类', spu: '松茸芝麻盐80g', sku: '松茸芝麻盐80g', code: '11060034696-0', createCost: 4.52, costAfter: 4.52, costBefore: 6.03, rebateRate: 0.25 },
+      { category: '主食类', spu: '五色杂粮糙米饭100g', sku: '五色杂粮糙米饭100g', code: '11040023546.0', createCost: '', costAfter: 1.30, costBefore: 1.53, rebateRate: 0.15 }
+    ],
+    packageCosts: [
+      { name: '气泡膜-亚光膜气泡袋45白', size: '350*450+40mm', code: '12110013661-0', whPrice: 0.61, jnPrice: 0.70, avgPrice: 0.66, weight: '0g<G<500g', expressPrice: 1.7486 },
+      { name: '气泡膜-亚光膜气泡袋26白', size: '320*265+40mm', code: '12110013660-0', whPrice: 0.34, jnPrice: 0.42, avgPrice: 0.38, weight: '500g<G<1000g', expressPrice: 1.9637 },
+      { name: '10号纸箱', size: '48.5cm*40cm*18cm', code: 'SYZX10#', whPrice: 3.70, jnPrice: 3.70, avgPrice: 3.70, weight: '1000g<G<2000g', expressPrice: 3.0206 }
+    ]
+  };
+}
+
+function calculateSKU(sku) {
+  var price = sku.price || 0;
+  var spec = sku.spec || 1;
+  var unitPrice = price / spec;
+  var productCostRate = price > 0 ? (sku.productCost || 0) / price : 0;
+  var packageCostRate = price > 0 ? (sku.packageCost || 0) / price : 0;
+  var expressCostRate = price > 0 ? (sku.expressCost || 0) / price : 0;
+  var operateCostRate = price > 0 ? (sku.operateCost || 0) / price : 0;
+  var totalStorageRate = packageCostRate + expressCostRate + operateCostRate;
+  var cr = sku.commissionRate || 0;
+  var tr = sku.taxRate || 0;
+  var pf = sku.platformFeeRate || 0;
+  var sr = sku.sampleRate || 0;
+  var ar = sku.afterSaleRate || 0;
+  var ir = sku.insuranceRate || 0;
+  var lr = sku.laborRate || 0;
+  var pcr = sku.paidCommissionRate || 0;
+  var marginNoLaborNormal = 1 - productCostRate - totalStorageRate - cr - tr - pf - sr - ar - ir;
+  var marginNoLaborNoCommission = 1 - productCostRate - totalStorageRate - tr - pf - sr - ar - ir;
+  var marginWithLaborNormal = 1 - productCostRate - totalStorageRate - cr - tr - pf - sr - ar - ir - lr;
+  var marginWithLaborNoCommission = 1 - productCostRate - totalStorageRate - tr - pf - sr - ar - ir - lr;
+  var selfRoi = marginWithLaborNoCommission > 0 ? (1 / Math.abs(marginWithLaborNoCommission) / 0.9) : null;
+  var coopRoiVal = marginWithLaborNoCommission - pcr;
+  var coopRoi = coopRoiVal > 0 ? (1 / Math.abs(coopRoiVal) / 0.9) : null;
+  var cardRatioNoLabor, cardRatioWithLabor;
+  if (marginNoLaborNormal < 0) {
+    var loss = price * Math.abs(marginNoLaborNormal);
+    var be = price * Math.abs(marginNoLaborNoCommission);
+    cardRatioNoLabor = loss / be / (1 + loss / be);
+  } else cardRatioNoLabor = null;
+  if (marginWithLaborNormal < 0) {
+    var loss2 = price * Math.abs(marginWithLaborNormal);
+    var be2 = price * Math.abs(marginWithLaborNoCommission);
+    cardRatioWithLabor = loss2 / be2 / (1 + loss2 / be2);
+  } else cardRatioWithLabor = null;
+  return {
+    unitPrice: unitPrice, productCostRate: productCostRate, packageCostRate: packageCostRate,
+    expressCostRate: expressCostRate, operateCostRate: operateCostRate, totalStorageRate: totalStorageRate,
+    marginNoLaborNormal: marginNoLaborNormal, marginNoLaborNoCommission: marginNoLaborNoCommission,
+    marginWithLaborNormal: marginWithLaborNormal, marginWithLaborNoCommission: marginWithLaborNoCommission,
+    selfRoi: selfRoi, coopRoi: coopRoi, cardRatioNoLabor: cardRatioNoLabor, cardRatioWithLabor: cardRatioWithLabor
+  };
+}
+
+function fmtPct(v) { return (v * 100).toFixed(2) + '%'; }
+function fmtPct1(v) { return (v * 100).toFixed(1) + '%'; }
+function fmtNum(v) { return v !== null && v !== undefined ? v.toFixed(2) : '-'; }
+function fmtRoi(v) { return v !== null ? v.toFixed(2) : '不付费'; }
+function fmtCard(v) { return v !== null ? fmtPct(v) : '正常盈利'; }
+
+function switchSheet(sheet) {
+  currentSheet = sheet;
+  document.querySelectorAll('.sheet-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelector('[data-sheet="' + sheet + '"]').classList.add('active');
+  render();
+}
+
+function render() {
+  if (currentSheet === 'pricing') renderPricingSheet();
+  else if (currentSheet === 'product-cost') renderProductCostSheet();
+  else if (currentSheet === 'package-cost') renderPackageCostSheet();
+}
+
+function renderPricingSheet() {
+  var product = data.products[currentProductIndex];
+  if (!product) {
+    document.getElementById('mainContent').innerHTML = '<div style="text-align:center;padding:60px;color:var(--muted);">暂无产品，请点击右上角"新增产品"</div>';
+    return;
+  }
+  var cols = [
+    { w: '40px', label: '' },
+    { w: '140px', label: '商品名称' },
+    { w: '60px', label: 'SKU规格' },
+    { w: '70px', label: '售价' },
+    { w: '70px', label: '件单价' },
+    { w: '70px', label: '产品成本' },
+    { w: '65px', label: '产品成本占比' },
+    { w: '70px', label: '包装成本' },
+    { w: '60px', label: '包装占比' },
+    { w: '70px', label: '快递成本' },
+    { w: '60px', label: '快递占比' },
+    { w: '70px', label: '操作费' },
+    { w: '65px', label: '操作费占比' },
+    { w: '70px', label: '总仓储占比' },
+    { w: '60px', label: '佣金率' },
+    { w: '60px', label: '经营税率' },
+    { w: '65px', label: '平台服务费' },
+    { w: '60px', label: '样品占比' },
+    { w: '60px', label: '售后占比' },
+    { w: '60px', label: '运费险' },
+    { w: '80px', label: '毛利率(未含人工)' },
+    { w: '80px', label: '毛利率(含人工)' },
+    { w: '60px', label: '人工成本' },
+    { w: '60px', label: '自营ROI' },
+    { w: '70px', label: '付费佣金率' },
+    { w: '60px', label: '合作ROI' }
+  ];
+  var colWidths = cols.map(function(c) { return c.w; }).join(' ');
+  var html = '<div class="spreadsheet-container"><div class="spreadsheet-grid" style="grid-template-columns:' + colWidths + ';">';
+  cols.forEach(function(c, i) {
+    html += '<div class="cell header ' + (i === 0 ? 'header-row' : '') + '">' + c.label + '</div>';
+  });
+  product.skus.forEach(function(sku, idx) {
+    var calc = calculateSKU(sku);
+    var rc = selectedRow === idx ? ' style="background:#e8f1ff;"' : '';
+    html += '<div class="cell row-num" ' + rc + ' onclick="selectRow(' + idx + ')">' + (idx + 1) + '</div>';
+    html += '<div class="cell" ' + rc + '>' + product.name + '</div>';
+    html += '<div class="cell" ' + rc + '><input type="number" value="' + sku.spec + '" onchange="updateSKU(' + idx + ',\'spec\',this.value)"></div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.01" value="' + sku.price + '" onchange="updateSKU(' + idx + ',\'price\',this.value)"></div>';
+    html += '<div class="cell formula-cell" ' + rc + '>' + fmtNum(calc.unitPrice) + '</div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.01" value="' + sku.productCost + '" onchange="updateSKU(' + idx + ',\'productCost\',this.value)"></div>';
+    html += '<div class="cell formula-cell" ' + rc + '>' + fmtPct1(calc.productCostRate) + '</div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.01" value="' + sku.packageCost + '" onchange="updateSKU(' + idx + ',\'packageCost\',this.value)"></div>';
+    html += '<div class="cell formula-cell" ' + rc + '>' + fmtPct1(calc.packageCostRate) + '</div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.01" value="' + sku.expressCost + '" onchange="updateSKU(' + idx + ',\'expressCost\',this.value)"></div>';
+    html += '<div class="cell formula-cell" ' + rc + '>' + fmtPct1(calc.expressCostRate) + '</div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.01" value="' + sku.operateCost + '" onchange="updateSKU(' + idx + ',\'operateCost\',this.value)"></div>';
+    html += '<div class="cell formula-cell" ' + rc + '>' + fmtPct1(calc.operateCostRate) + '</div>';
+    html += '<div class="cell formula-cell highlight" ' + rc + '>' + fmtPct(calc.totalStorageRate) + '</div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.001" value="' + sku.commissionRate + '" onchange="updateSKU(' + idx + ',\'commissionRate\',this.value)"></div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.001" value="' + sku.taxRate + '" onchange="updateSKU(' + idx + ',\'taxRate\',this.value)"></div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.001" value="' + sku.platformFeeRate + '" onchange="updateSKU(' + idx + ',\'platformFeeRate\',this.value)"></div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.001" value="' + sku.sampleRate + '" onchange="updateSKU(' + idx + ',\'sampleRate\',this.value)"></div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.001" value="' + sku.afterSaleRate + '" onchange="updateSKU(' + idx + ',\'afterSaleRate\',this.value)"></div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.001" value="' + sku.insuranceRate + '" onchange="updateSKU(' + idx + ',\'insuranceRate\',this.value)"></div>';
+    html += '<div class="cell formula-cell ' + (calc.marginNoLaborNormal >= 0 ? 'positive' : 'negative') + '" ' + rc + '>' + fmtPct(calc.marginNoLaborNormal) + '</div>';
+    html += '<div class="cell formula-cell ' + (calc.marginWithLaborNormal >= 0 ? 'positive' : 'negative') + '" ' + rc + '>' + fmtPct(calc.marginWithLaborNormal) + '</div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.001" value="' + sku.laborRate + '" onchange="updateSKU(' + idx + ',\'laborRate\',this.value)"></div>';
+    html += '<div class="cell formula-cell ' + (calc.selfRoi !== null ? 'roi-good' : 'roi-bad') + '" ' + rc + '>' + fmtRoi(calc.selfRoi) + '</div>';
+    html += '<div class="cell" ' + rc + '><input type="number" step="0.001" value="' + sku.paidCommissionRate + '" onchange="updateSKU(' + idx + ',\'paidCommissionRate\',this.value)"></div>';
+    html += '<div class="cell formula-cell ' + (calc.coopRoi !== null ? 'roi-good' : 'roi-bad') + '" ' + rc + '>' + fmtRoi(calc.coopRoi) + '</div>';
+  });
+  html += '</div></div>';
+  html += '<div style="margin-top:20px;"><div class="section-label">纯佣商品卡占比测算</div>';
+  html += '<div class="spreadsheet-container"><div class="spreadsheet-grid" style="grid-template-columns: 40px 140px 160px 160px;">';
+  html += '<div class="cell header header-row">#</div><div class="cell header">售价</div><div class="cell header">商品卡占比(未含人工)</div><div class="cell header">商品卡占比(含人工)</div>';
+  product.skus.forEach(function(sku, idx) {
+    var calc = calculateSKU(sku);
+    html += '<div class="cell row-num">' + (idx + 1) + '</div>';
+    html += '<div class="cell">' + sku.price + '</div>';
+    html += '<div class="cell ' + (calc.cardRatioNoLabor !== null ? 'negative' : 'positive') + '">' + fmtCard(calc.cardRatioNoLabor) + '</div>';
+    html += '<div class="cell ' + (calc.cardRatioWithLabor !== null ? 'negative' : 'positive') + '">' + fmtCard(calc.cardRatioWithLabor) + '</div>';
+  });
+  html += '</div></div></div>';
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+function updateSKU(idx, field, value) {
+  var product = data.products[currentProductIndex];
+  if (!product) return;
+  var num = parseFloat(value);
+  product.skus[idx][field] = isNaN(num) ? 0 : num;
+  saveData();
+  renderPricingSheet();
+}
+
+function selectRow(idx) {
+  selectedRow = selectedRow === idx ? null : idx;
+  renderPricingSheet();
+}
+
+function addSKU() { document.getElementById('addSKUModal').classList.add('show'); }
+
+function confirmAddSKU() {
+  var spec = parseInt(document.getElementById('newSkuSpec').value) || 1;
+  var price = parseFloat(document.getElementById('newSkuPrice').value) || 19.9;
+  var product = data.products[currentProductIndex];
+  if (!product) return;
+  var last = product.skus[product.skus.length - 1];
+  var newSku = {
+    spec: spec, price: price,
+    productCost: last ? last.productCost : 0, packageCost: last ? last.packageCost : 0,
+    expressCost: last ? last.expressCost : 0, operateCost: last ? last.operateCost : 0.75,
+    commissionRate: last ? last.commissionRate : 0.09, taxRate: last ? last.taxRate : 0.015,
+    platformFeeRate: last ? last.platformFeeRate : 0.02, sampleRate: last ? last.sampleRate : 0.01,
+    afterSaleRate: last ? last.afterSaleRate : 0.005, insuranceRate: last ? last.insuranceRate : 0.005,
+    laborRate: last ? last.laborRate : 0.04, paidCommissionRate: last ? last.paidCommissionRate : 0.03
+  };
+  product.skus.push(newSku);
+  saveData();
+  closeModal('addSKUModal');
+  renderPricingSheet();
+  showToast('SKU添加成功');
+}
+
+function duplicateLastSKU() {
+  var product = data.products[currentProductIndex];
+  if (!product || product.skus.length === 0) return;
+  var last = JSON.parse(JSON.stringify(product.skus[product.skus.length - 1]));
+  product.skus.push(last);
+  saveData();
+  renderPricingSheet();
+  showToast('已复制上一行');
+}
+
+function deleteSelectedSKU() {
+  var product = data.products[currentProductIndex];
+  if (!product || selectedRow === null) { showToast('请先点击行号选中一行'); return; }
+  product.skus.splice(selectedRow, 1);
+  selectedRow = null;
+  saveData();
+  renderPricingSheet();
+  showToast('已删除选中行');
+}
+
+function renderProductCostSheet() {
+  var html = '<div class="data-table-container"><table class="data-table"><thead><tr>';
+  html += '<th>产品品类</th><th>产品SPU</th><th>产品SKU</th><th>单品编码</th><th>创品集成本</th><th>产品成本(返点后)</th><th>产品成本(返点前)</th><th>返点率</th><th>操作</th>';
+  html += '</tr></thead><tbody>';
+  data.productCosts.forEach(function(item, idx) {
+    html += '<tr>';
+    html += '<td><input value="' + item.category + '" onchange="updateProductCost(' + idx + ',\'category\',this.value)"></td>';
+    html += '<td><input value="' + item.spu + '" onchange="updateProductCost(' + idx + ',\'spu\',this.value)"></td>';
+    html += '<td><input value="' + item.sku + '" onchange="updateProductCost(' + idx + ',\'sku\',this.value)"></td>';
+    html += '<td><input value="' + item.code + '" onchange="updateProductCost(' + idx + ',\'code\',this.value)"></td>';
+    html += '<td><input type="number" step="0.01" value="' + item.createCost + '" onchange="updateProductCost(' + idx + ',\'createCost\',this.value)"></td>';
+    html += '<td><input type="number" step="0.01" value="' + item.costAfter + '" onchange="updateProductCost(' + idx + ',\'costAfter\',this.value)"></td>';
+    html += '<td><input type="number" step="0.01" value="' + item.costBefore + '" onchange="updateProductCost(' + idx + ',\'costBefore\',this.value)"></td>';
+    html += '<td><input value="' + (item.rebateRate * 100).toFixed(0) + '%" onchange="updateProductCostRate(' + idx + ',this.value)"></td>';
+    html += '<td><button class="btn btn-danger btn-sm" onclick="deleteProductCost(' + idx + ')">删除</button></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  html += '<div style="margin-top:12px;"><button class="btn btn-primary" onclick="addProductCostRow()">+ 添加产品成本</button></div>';
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+function updateProductCost(idx, field, value) {
+  if (field === 'createCost' || field === 'costAfter' || field === 'costBefore') {
+    data.productCosts[idx][field] = parseFloat(value) || '';
+  } else {
+    data.productCosts[idx][field] = value;
+  }
+  saveData();
+}
+function updateProductCostRate(idx, value) {
+  data.productCosts[idx].rebateRate = parseFloat(value.replace('%', '')) / 100 || 0;
+  saveData();
+}
+function addProductCostRow() {
+  data.productCosts.push({ category: '', spu: '', sku: '', code: '', createCost: '', costAfter: '', costBefore: '', rebateRate: 0 });
+  saveData();
+  renderProductCostSheet();
+}
+function deleteProductCost(idx) {
+  data.productCosts.splice(idx, 1);
+  saveData();
+  renderProductCostSheet();
+}
+
+function renderPackageCostSheet() {
+  var html = '<div class="data-table-container"><table class="data-table"><thead><tr>';
+  html += '<th>包装规格名称</th><th>包装规格尺寸</th><th>包装商品编码</th><th>芜湖仓单价</th><th>济南仓单价</th><th>均价</th><th>快递净重</th><th>快递单价</th><th>操作</th>';
+  html += '</tr></thead><tbody>';
+  data.packageCosts.forEach(function(item, idx) {
+    html += '<tr>';
+    html += '<td><input value="' + item.name + '" onchange="updatePackageCost(' + idx + ',\'name\',this.value)"></td>';
+    html += '<td><input value="' + item.size + '" onchange="updatePackageCost(' + idx + ',\'size\',this.value)"></td>';
+    html += '<td><input value="' + item.code + '" onchange="updatePackageCost(' + idx + ',\'code\',this.value)"></td>';
+    html += '<td><input type="number" step="0.01" value="' + item.whPrice + '" onchange="updatePackageCost(' + idx + ',\'whPrice\',this.value)"></td>';
+    html += '<td><input type="number" step="0.01" value="' + item.jnPrice + '" onchange="updatePackageCost(' + idx + ',\'jnPrice\',this.value)"></td>';
+    html += '<td><input type="number" step="0.01" value="' + item.avgPrice + '" onchange="updatePackageCost(' + idx + ',\'avgPrice\',this.value)"></td>';
+    html += '<td><input value="' + item.weight + '" onchange="updatePackageCost(' + idx + ',\'weight\',this.value)"></td>';
+    html += '<td><input type="number" step="0.0001" value="' + item.expressPrice + '" onchange="updatePackageCost(' + idx + ',\'expressPrice\',this.value)"></td>';
+    html += '<td><button class="btn btn-danger btn-sm" onclick="deletePackageCost(' + idx + ')">删除</button></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  html += '<div style="margin-top:12px;"><button class="btn btn-primary" onclick="addPackageCostRow()">+ 添加包装规格</button></div>';
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+function updatePackageCost(idx, field, value) {
+  if (field === 'whPrice' || field === 'jnPrice' || field === 'avgPrice' || field === 'expressPrice') {
+    data.packageCosts[idx][field] = parseFloat(value) || 0;
+  } else {
+    data.packageCosts[idx][field] = value;
+  }
+  saveData();
+}
+function addPackageCostRow() {
+  data.packageCosts.push({ name: '', size: '', code: '', whPrice: 0, jnPrice: 0, avgPrice: 0, weight: '', expressPrice: 0 });
+  saveData();
+  renderPackageCostSheet();
+}
+function deletePackageCost(idx) {
+  data.packageCosts.splice(idx, 1);
+  saveData();
+  renderPackageCostSheet();
+}
+
+function renderProductTabs() {
+  var tabsContainer = document.getElementById('sheetTabs');
+  var fixedTabs = Array.from(tabsContainer.querySelectorAll('.sheet-tab:not(.product-tab)')).slice(0, 3);
+  tabsContainer.innerHTML = '';
+  fixedTabs.forEach(function(t) { tabsContainer.appendChild(t); });
+  data.products.forEach(function(product, idx) {
+    var tab = document.createElement('button');
+    tab.className = 'sheet-tab product-tab';
+    tab.innerHTML = product.name + ' <span class="tab-close" onclick="event.stopPropagation();deleteProduct(' + idx + ')">x</span>';
+    tab.onclick = function() {
+      currentSheet = 'pricing';
+      currentProductIndex = idx;
+      document.querySelectorAll('.sheet-tab').forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      render();
+    };
+    tabsContainer.appendChild(tab);
+  });
+  var addBtn = document.createElement('button');
+  addBtn.className = 'sheet-tab add-sheet';
+  addBtn.textContent = '+';
+  addBtn.onclick = showAddProductModal;
+  tabsContainer.appendChild(addBtn);
+}
+
+function showAddProductModal() {
+  document.getElementById('addProductModal').classList.add('show');
+  document.getElementById('newProductName').value = '';
+  document.getElementById('newProductName').focus();
+}
+
+function confirmAddProduct() {
+  var name = document.getElementById('newProductName').value.trim();
+  if (!name) return;
+  data.products.push({ name: name, skus: [] });
+  currentProductIndex = data.products.length - 1;
+  currentSheet = 'pricing';
+  saveData();
+  closeModal('addProductModal');
+  renderProductTabs();
+  render();
+  showToast('产品添加成功');
+}
+
+function deleteProduct(idx) {
+  if (data.products.length <= 1) { showToast('至少保留一个产品'); return; }
+  data.products.splice(idx, 1);
+  if (currentProductIndex >= data.products.length) currentProductIndex = data.products.length - 1;
+  saveData();
+  renderProductTabs();
+  render();
+  showToast('产品已删除');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function showToast(msg) {
+  var toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 2500);
+}
+
+function exportData() {
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = '定价模型数据_' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('数据已导出');
+}
+
+function importData(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var imported = JSON.parse(e.target.result);
+      if (imported.products && imported.productCosts && imported.packageCosts) {
+        data = imported;
+        saveData();
+        renderProductTabs();
+        render();
+        showToast('数据导入成功');
+      } else { showToast('数据格式不正确'); }
+    } catch(err) { showToast('导入失败: ' + err.message); }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+function init() { renderProductTabs(); render(); }
+
+document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+  overlay.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('show'); });
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { document.querySelectorAll('.modal-overlay').forEach(function(m) { m.classList.remove('show'); }); }
+});
+
+init();
+</script>
+</body>
+</html>
