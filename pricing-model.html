@@ -6,114 +6,32 @@
 <title>商品定价模型 - 零壹经营体</title>
 <style>
   :root {
-    --bg: #f5f7fa;
-    --bg2: #ffffff;
-    --ink: #1f2329;
-    --muted: #8f959e;
-    --rule: #e5e6eb;
-    --accent: #3370ff;
-    --accent2: #34d399;
-    --danger: #f54a45;
-    --warning: #f6ad55;
-    --success: #34d399;
-    --header-bg: #e1eaff;
-    --hover-bg: #f2f3f5;
-    --font-body: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    --bg: #f5f7fa; --bg2: #ffffff; --ink: #1f2329; --muted: #8f959e;
+    --rule: #e5e6eb; --accent: #3370ff; --accent2: #34d399; --danger: #f54a45;
+    --success: #34d399; --header-bg: #e1eaff; --hover-bg: #f2f3f5;
+    --font-body: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: var(--font-body);
-    background: var(--bg);
-    color: var(--ink);
-    line-height: 1.6;
-    font-size: 14px;
-  }
-  .app-header {
-    background: var(--bg2);
-    border-bottom: 1px solid var(--rule);
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .app-header h1 { font-size: 20px; font-weight: 700; color: var(--ink); }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--ink); line-height: 1.6; font-size: 14px; }
+  .app-header { background: var(--bg2); border-bottom: 1px solid var(--rule); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .app-header h1 { font-size: 20px; font-weight: 700; }
   .app-header .subtitle { font-size: 12px; color: var(--muted); margin-left: 12px; }
   .header-actions { display: flex; gap: 8px; }
-  .sheet-tabs {
-    display: flex;
-    background: var(--bg2);
-    border-bottom: 1px solid var(--rule);
-    padding: 0 24px;
-    overflow-x: auto;
-    gap: 2px;
-  }
-  .sheet-tab {
-    padding: 10px 20px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 13px;
-    color: var(--muted);
-    white-space: nowrap;
-    position: relative;
-    border-radius: 6px 6px 0 0;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+  .sheet-tabs { display: flex; background: var(--bg2); border-bottom: 1px solid var(--rule); padding: 0 24px; overflow-x: auto; gap: 2px; }
+  .sheet-tab { padding: 10px 20px; border: none; background: transparent; cursor: pointer; font-size: 13px; color: var(--muted); white-space: nowrap; position: relative; border-radius: 6px 6px 0 0; transition: all 0.15s; }
   .sheet-tab:hover { background: var(--hover-bg); color: var(--ink); }
   .sheet-tab.active { background: var(--bg); color: var(--accent); font-weight: 600; }
-  .sheet-tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--accent);
-  }
-  .sheet-tab .tab-close {
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-  .sheet-tab:hover .tab-close { opacity: 1; }
-  .sheet-tab .tab-close:hover { background: var(--danger); color: #fff; }
-  .sheet-tab.add-sheet { color: var(--accent); font-weight: 600; }
-  .sheet-tab.add-sheet:hover { background: #e8f1ff; }
+  .sheet-tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--accent); }
   .main-content { padding: 20px 24px; max-width: 100%; overflow-x: auto; }
-  .spreadsheet-container {
-    background: var(--bg2);
-    border-radius: 8px;
-    border: 1px solid var(--rule);
-    overflow: hidden;
-  }
+  .toolbar { display: flex; gap: 8px; padding: 12px 24px; background: var(--bg2); border-bottom: 1px solid var(--rule); align-items: center; flex-wrap: wrap; }
+  .toolbar-sep { width: 1px; height: 20px; background: var(--rule); margin: 0 4px; }
+  .spreadsheet-container { background: var(--bg2); border-radius: 8px; border: 1px solid var(--rule); overflow: hidden; margin-bottom: 20px; }
   .spreadsheet-grid { display: grid; font-size: 13px; min-width: 1400px; }
-  .cell {
-    padding: 6px 8px;
-    border-right: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-    min-height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-  }
-  .cell.header { background: var(--header-bg); font-weight: 600; color: var(--ink); position: sticky; top: 0; z-index: 10; }
+  .cell { padding: 6px 8px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); min-height: 32px; display: flex; align-items: center; justify-content: center; }
+  .cell.header { background: var(--header-bg); font-weight: 600; position: sticky; top: 0; z-index: 10; }
   .cell.header-row { background: var(--header-bg); font-weight: 600; position: sticky; left: 0; z-index: 11; }
   .cell.header.header-row { z-index: 12; }
-  .cell input, .cell select {
-    width: 100%; border: none; background: transparent;
-    text-align: center; font-size: 13px; outline: none;
-    font-family: var(--font-body); padding: 2px;
-  }
+  .cell input, .cell select { width: 100%; border: none; background: transparent; text-align: center; font-size: 13px; outline: none; font-family: var(--font-body); padding: 2px; }
   .cell input:focus { background: #e8f1ff; border-radius: 3px; }
   .cell.formula-cell { background: #fffbe6; }
   .cell.negative { color: var(--danger); font-weight: 600; }
@@ -121,17 +39,8 @@
   .cell.highlight { color: var(--accent); font-weight: 600; }
   .cell.roi-good { color: var(--success); font-weight: 600; }
   .cell.roi-bad { color: var(--danger); font-weight: 600; }
-  .row-num {
-    background: var(--bg); color: var(--muted);
-    font-size: 11px; width: 40px;
-    justify-content: center;
-    position: sticky; left: 0; z-index: 5;
-  }
-  .btn {
-    padding: 8px 16px; border: none; border-radius: 6px;
-    cursor: pointer; font-size: 13px; font-weight: 500;
-    transition: all 0.15s; font-family: var(--font-body);
-  }
+  .row-num { background: var(--bg); color: var(--muted); font-size: 11px; width: 40px; justify-content: center; position: sticky; left: 0; z-index: 5; }
+  .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s; font-family: var(--font-body); }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-primary:hover { background: #2860e0; }
   .btn-danger { background: var(--danger); color: #fff; }
@@ -139,69 +48,28 @@
   .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--rule); }
   .btn-ghost:hover { background: var(--hover-bg); color: var(--ink); }
   .btn-sm { padding: 4px 10px; font-size: 12px; }
-  .toolbar {
-    display: flex; gap: 8px; padding: 12px 24px;
-    background: var(--bg2); border-bottom: 1px solid var(--rule); align-items: center;
-  }
-  .toolbar-sep { width: 1px; height: 20px; background: var(--rule); margin: 0 4px; }
-  .modal-overlay {
-    display: none; position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.4); z-index: 1000;
-    justify-content: center; align-items: center;
-  }
-  .modal-overlay.show { display: flex; }
-  .modal {
-    background: var(--bg2); border-radius: 12px; padding: 24px;
-    width: 90%; max-width: 500px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-  }
-  .modal h3 { margin-bottom: 16px; font-size: 18px; }
-  .modal-body { margin-bottom: 20px; }
-  .modal-body input, .modal-body select {
-    width: 100%; padding: 10px 12px;
-    border: 1px solid var(--rule); border-radius: 6px;
-    font-size: 14px; margin-bottom: 12px; font-family: var(--font-body);
-  }
-  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-  .data-table-container {
-    background: var(--bg2); border-radius: 8px;
-    border: 1px solid var(--rule); overflow: auto; max-height: 70vh;
-  }
+  .data-table-container { background: var(--bg2); border-radius: 8px; border: 1px solid var(--rule); overflow: auto; max-height: 70vh; }
   .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .data-table th {
-    background: var(--header-bg); padding: 10px 12px;
-    text-align: center; font-weight: 600;
-    border: 1px solid var(--rule); position: sticky; top: 0; z-index: 10;
-  }
-  .data-table td {
-    padding: 8px 12px; border: 1px solid var(--rule); text-align: center;
-  }
-  .data-table td input, .data-table td select {
-    width: 100%; border: none; background: transparent;
-    text-align: center; font-size: 13px; outline: none; font-family: var(--font-body);
-  }
+  .data-table th { background: var(--header-bg); padding: 10px 12px; text-align: center; font-weight: 600; border: 1px solid var(--rule); position: sticky; top: 0; z-index: 10; }
+  .data-table td { padding: 8px 12px; border: 1px solid var(--rule); text-align: center; }
+  .data-table td input, .data-table td select { width: 100%; border: none; background: transparent; text-align: center; font-size: 13px; outline: none; font-family: var(--font-body); }
   .data-table td input:focus { background: #e8f1ff; border-radius: 3px; }
   .data-table tr:nth-child(even) { background: #fafbfc; }
   .data-table tr:hover { background: var(--hover-bg); }
-  .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--ink); color: #fff;
-    padding: 12px 20px; border-radius: 8px;
-    font-size: 13px; z-index: 2000;
-    opacity: 0; transform: translateY(20px); transition: all 0.3s;
-  }
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--bg2); border-radius: 12px; padding: 24px; width: 90%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+  .modal h3 { margin-bottom: 16px; font-size: 18px; }
+  .modal-body { margin-bottom: 20px; }
+  .modal-body input, .modal-body select { width: 100%; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 6px; font-size: 14px; margin-bottom: 12px; font-family: var(--font-body); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 13px; z-index: 2000; opacity: 0; transform: translateY(20px); transition: all 0.3s; }
   .toast.show { opacity: 1; transform: translateY(0); }
-  .section-label {
-    grid-column: 1 / -1; background: #f0f4ff;
-    padding: 10px 16px; font-weight: 600;
-    color: var(--accent); border-bottom: 1px solid var(--rule); font-size: 14px;
-  }
-  @media (max-width: 768px) {
-    .app-header { flex-direction: column; gap: 8px; }
-    .main-content { padding: 12px; }
-    .spreadsheet-grid { min-width: 1000px; }
-  }
+  .section-label { background: #f0f4ff; padding: 10px 16px; font-weight: 600; color: var(--accent); border-bottom: 1px solid var(--rule); font-size: 14px; }
+  .product-selector { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .product-selector label { font-weight: 600; color: var(--ink); }
+  .product-selector select { padding: 8px 16px; border: 1px solid var(--rule); border-radius: 6px; font-size: 14px; min-width: 200px; }
+  @media (max-width: 768px) { .app-header { flex-direction: column; gap: 8px; } .main-content { padding: 12px; } .spreadsheet-grid { min-width: 1000px; } }
 </style>
 </head>
 <body>
@@ -215,7 +83,6 @@
     <button class="btn btn-ghost" onclick="exportData()">导出JSON</button>
     <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">导入JSON</button>
     <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(this)">
-    <button class="btn btn-primary" onclick="showAddProductModal()">+ 新增产品</button>
   </div>
 </div>
 
@@ -236,19 +103,6 @@
 
 <div class="main-content" id="mainContent"></div>
 
-<div class="modal-overlay" id="addProductModal">
-  <div class="modal">
-    <h3>新增产品</h3>
-    <div class="modal-body">
-      <input type="text" id="newProductName" placeholder="请输入产品名称（如：玉米味鸡胸肉饼60g）">
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('addProductModal')">取消</button>
-      <button class="btn btn-primary" onclick="confirmAddProduct()">确认</button>
-    </div>
-  </div>
-</div>
-
 <div class="modal-overlay" id="addSKUModal">
   <div class="modal">
     <h3>添加SKU规格</h3>
@@ -266,54 +120,101 @@
 <div class="toast" id="toast"></div>
 
 <script>
-var STORAGE_KEY = 'pricing_model_spreadsheet_v2';
+var STORAGE_KEY = 'pricing_model_v3';
 var data = loadData();
 var currentSheet = 'pricing';
-var currentProductIndex = 0;
+var selectedProduct = '';
 var selectedRow = null;
 
 function loadData() {
-  try {
-    var saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch(e) {}
+  try { var saved = localStorage.getItem(STORAGE_KEY); if (saved) return JSON.parse(saved); } catch(e) {}
   return getDefaultData();
 }
-
-function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
+function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 
 function getDefaultData() {
   return {
     products: [
-      {
-        name: '玉米味鸡胸肉饼60g',
-        skus: [
-          { spec: 10, price: 16.99, productCost: 12.00, packageCost: 0.42, expressCost: 1.96, operateCost: 0.75, commissionRate: 0.09, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 },
-          { spec: 20, price: 32.99, productCost: 24.00, packageCost: 0.61, expressCost: 3.02, operateCost: 0.75, commissionRate: 0.09, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 }
-        ]
-      },
-      {
-        name: '松茸芝麻盐80g',
-        skus: [
-          { spec: 1, price: 19.9, productCost: 4.82, packageCost: 0.31, expressCost: 1.75, operateCost: 0.75, commissionRate: 0.40, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 },
-          { spec: 2, price: 29.9, productCost: 9.64, packageCost: 0.31, expressCost: 1.75, operateCost: 0.75, commissionRate: 0.40, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 },
-          { spec: 3, price: 37.9, productCost: 14.46, packageCost: 0.35, expressCost: 1.75, operateCost: 0.75, commissionRate: 0.40, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 }
-        ]
-      }
+      { name: '玉米味鸡胸肉饼60g', skus: [
+        { spec: 10, price: 16.99, productCost: 12.00, packageCost: 0.42, expressCost: 1.96, operateCost: 0.75, commissionRate: 0.09, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 },
+        { spec: 20, price: 32.99, productCost: 24.00, packageCost: 0.61, expressCost: 3.02, operateCost: 0.75, commissionRate: 0.09, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 }
+      ]},
+      { name: '松茸芝麻盐80g', skus: [
+        { spec: 1, price: 19.9, productCost: 4.82, packageCost: 0.31, expressCost: 1.75, operateCost: 0.75, commissionRate: 0.40, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 },
+        { spec: 2, price: 29.9, productCost: 9.64, packageCost: 0.31, expressCost: 1.75, operateCost: 0.75, commissionRate: 0.40, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 },
+        { spec: 3, price: 37.9, productCost: 14.46, packageCost: 0.35, expressCost: 1.75, operateCost: 0.75, commissionRate: 0.40, taxRate: 0.015, platformFeeRate: 0.02, sampleRate: 0.01, afterSaleRate: 0.005, insuranceRate: 0.005, laborRate: 0.04, paidCommissionRate: 0.03 }
+      ]}
     ],
     productCosts: [
-      { category: '肉食类', spu: '鸡胸肉饼60g', sku: '鸡胸肉饼60g-玉米味', code: '11010014758-0', createCost: 1.20, costAfter: 1.20, costBefore: 2.00, rebateRate: 0.40 },
-      { category: '调味类', spu: '松茸芝麻盐80g', sku: '松茸芝麻盐80g', code: '11060034696-0', createCost: 4.52, costAfter: 4.52, costBefore: 6.03, rebateRate: 0.25 },
-      { category: '主食类', spu: '五色杂粮糙米饭100g', sku: '五色杂粮糙米饭100g', code: '11040023546.0', createCost: '', costAfter: 1.30, costBefore: 1.53, rebateRate: 0.15 }
+      { category: '肉食类', spu: '鸡胸肉饼60g', sku: '鸡胸肉饼60g-玉米味', code: '11010014758-0', createCost: 1.20, costBefore: 2.00, rebateRate: 0.40 },
+      { category: '肉食类', spu: '鸡胸肉饼60g', sku: '鸡胸肉饼60g-原味', code: '11010014759-0', createCost: 1.20, costBefore: 2.00, rebateRate: 0.40 },
+      { category: '肉食类', spu: '鸡胸肉饼60g', sku: '鸡胸肉饼60g-黑椒味', code: '11010014760-0', createCost: 1.20, costBefore: 2.00, rebateRate: 0.40 },
+      { category: '肉食类', spu: '鸡胸肉饼60g', sku: '鸡胸肉饼60g-香辣味', code: '11010014761-0', createCost: 1.20, costBefore: 2.00, rebateRate: 0.40 },
+      { category: '肉食类', spu: '风干鸡胸肉100g', sku: '风干鸡胸肉100g-五香', code: 'SYRS1540', createCost: '', costBefore: 9.61, rebateRate: 0.20 },
+      { category: '肉食类', spu: '风干鸡胸肉100g', sku: '风干鸡胸肉100g-香辣', code: 'SYRS1541', createCost: '', costBefore: 9.61, rebateRate: 0.20 },
+      { category: '肉食类', spu: '豆皮鸡胸肉卷40g', sku: '豆皮鸡胸肉卷40g-香辣味', code: '11010013884-0', createCost: 1.08, costBefore: 1.35, rebateRate: 0.15 },
+      { category: '肉食类', spu: '风干鸡胸肉250g', sku: '风干鸡胸肉250g-五香', code: '11010014756-0', createCost: 12.28, costBefore: 17.54, rebateRate: 0.30 },
+      { category: '肉食类', spu: '风干鸡胸肉250g', sku: '风干鸡胸肉250g-香辣', code: '11010014757-0', createCost: 12.28, costBefore: 17.54, rebateRate: 0.30 },
+      { category: '肉食类', spu: '薄脆鸡胸肉片80g', sku: '薄脆鸡胸肉片80g-孜然味', code: '11010014522-0', createCost: 11.20, costBefore: 16.20, rebateRate: 0.15 },
+      { category: '肉食类', spu: '薄脆鸡胸肉片80g', sku: '薄脆鸡胸肉片80g-香辣味', code: '11010014523-0', createCost: 11.20, costBefore: 16.20, rebateRate: 0.15 },
+      { category: '肉食类', spu: '小轻担即食嫩烤鸡胸50g', sku: '小轻担即食嫩烤鸡胸50g-黑椒味', code: '11010014538-0', createCost: 1.02, costBefore: 1.66, rebateRate: 0.31 },
+      { category: '肉食类', spu: '小轻担即食嫩烤鸡胸50g', sku: '小轻担即食嫩烤鸡胸50g-奥尔良味', code: '11010014611-0', createCost: 1.02, costBefore: 1.66, rebateRate: 0.31 },
+      { category: '肉食类', spu: '小轻担即食嫩烤鸡胸50g', sku: '小轻担即食嫩烤鸡胸50g-原味', code: '11010014613-0', createCost: 1.02, costBefore: 1.66, rebateRate: 0.31 },
+      { category: '肉食类', spu: '高蛋白吮指鸡腿75g', sku: '高蛋白吮指鸡腿75g-奥尔良味', code: '11010013527.0', createCost: 3.02, costBefore: 4.03, rebateRate: 0.15 },
+      { category: '肉食类', spu: '高蛋白吮指鸡腿75g', sku: '高蛋白吮指鸡腿75g-香辣味', code: 'SYRS2394', createCost: 3.02, costBefore: 4.03, rebateRate: 0.15 },
+      { category: '肉食类', spu: '高蛋白吮指鸡腿75g', sku: '高蛋白吮指鸡腿75g-黑鸭味', code: '11010013792-0', createCost: 3.02, costBefore: 4.03, rebateRate: 0.15 },
+      { category: '肉食类', spu: '小轻担低脂鸡胸肉肠300g', sku: '小轻担低脂鸡胸肉肠300g', code: 'SYRS2196', createCost: '', costBefore: 9.51, rebateRate: 0.25 },
+      { category: '肉食类', spu: '小轻担低脂鸡胸肉肠25g', sku: '小轻担低脂鸡胸肉肠25g', code: '11010013547.0', createCost: '', costBefore: 0.70, rebateRate: 0.25 },
+      { category: '肉食类', spu: '小轻担低脂鸡胸肉丸300g', sku: '小轻担低脂鸡胸肉丸300g', code: 'SYRS2189', createCost: '', costBefore: 8.51, rebateRate: 0.25 },
+      { category: '肉食类', spu: '小轻担低脂鸡胸肉丸25g', sku: '小轻担低脂鸡胸肉丸25g', code: '11010013512.0', createCost: '', costBefore: 0.70, rebateRate: 0.25 },
+      { category: '肉食类', spu: '小轻担高蛋白吮指鸡腿75g', sku: '小轻担高蛋白吮指鸡腿（香辣味）75g', code: '11010014846-0', createCost: '', costBefore: 3.66, rebateRate: 0.29 },
+      { category: '肉食类', spu: '小轻担高蛋白吮指鸡腿75g', sku: '小轻担高蛋白吮指鸡腿（奥尔良味）75g', code: '11010014891-0', createCost: '', costBefore: 3.66, rebateRate: 0.29 },
+      { category: '肉食类', spu: '小轻担高蛋白吮指鸡腿75g', sku: '小轻担高蛋白吮指鸡腿（黑鸭味）75g', code: '11010014892-0', createCost: '', costBefore: 3.66, rebateRate: 0.29 },
+      { category: '肉食类', spu: '鲨鱼菲特鸡胸肉高蛋白棒25g', sku: '鲨鱼菲特鸡胸肉高蛋白棒25g', code: '11010014775-0', createCost: '', costBefore: 0.89, rebateRate: 0.20 },
+      { category: '肉食类', spu: '鲨鱼菲特鸡胸肉高蛋白棒25g*15', sku: '鲨鱼菲特鸡胸肉高蛋白棒25g*15', code: '11010014804-0', createCost: '', costBefore: 14.38, rebateRate: 0.20 },
+      { category: '肉食类', spu: '安格斯牛排脆香辣味30g', sku: '安格斯牛排脆香辣味30g', code: '11010044769-0', createCost: '', costBefore: 14.77, rebateRate: 0.20 },
+      { category: '肉食类', spu: '鲨鱼菲特去皮鸭腿110g', sku: '鲨鱼菲特去皮鸭腿（香辣味）110g', code: '11010024912-0', createCost: '', costBefore: 3.92, rebateRate: 0.29 },
+      { category: '肉食类', spu: '鲨鱼菲特去皮鸭腿110g', sku: '鲨鱼菲特去皮鸭腿（酱香味）110g', code: '11010024913-0', createCost: '', costBefore: 3.92, rebateRate: 0.29 },
+      { category: '肉食类', spu: '肉包蛋60g', sku: '肉包蛋60g', code: '', createCost: '', costBefore: 1.50, rebateRate: 0.29 },
+      { category: '零食类', spu: '低脂鹰嘴豆60g', sku: '低脂鹰嘴豆60g-原味', code: '11050053833-0', createCost: 1.30, costBefore: 1.96, rebateRate: 0.15 },
+      { category: '零食类', spu: '粗粮三色豆60g', sku: '粗粮三色豆60g', code: '11050053766-0', createCost: 1.30, costBefore: 1.96, rebateRate: 0.15 },
+      { category: '零食类', spu: '玉米粒90g', sku: '玉米粒90g', code: '11050063536.0', createCost: 1.19, costBefore: 1.58, rebateRate: 0.15 },
+      { category: '零食类', spu: '0脂软糯紫薯干500g', sku: '0脂软糯紫薯干500g-原味', code: '11050023839-0', createCost: '', costBefore: 17.43, rebateRate: 0.15 },
+      { category: '零食类', spu: '贡菜魔芋20g', sku: '贡菜魔芋20g-香辣味', code: '11050064725-0', createCost: 0.62, costBefore: 0.77, rebateRate: 0.20 },
+      { category: '零食类', spu: '酸辣泡椒海带结30g', sku: '酸辣泡椒海带结30g', code: '11050064726-0', createCost: 0.72, costBefore: 0.90, rebateRate: 0.20 },
+      { category: '零食类', spu: '鹰嘴豆荞麦脆片25g', sku: '鹰嘴豆荞麦脆片牛肉味25g', code: '11050064782-0', createCost: '', costBefore: 0.69, rebateRate: 0.20 },
+      { category: '零食类', spu: '鹰嘴豆荞麦脆片25g', sku: '鹰嘴豆荞麦脆片海苔味25g', code: '11050064789-0', createCost: '', costBefore: 0.69, rebateRate: 0.20 },
+      { category: '烘焙类', spu: '燕麦棒200g', sku: '奇亚籽谷物', code: 'SYHB0963', createCost: '', costBefore: 8.61, rebateRate: 0.25 },
+      { category: '烘焙类', spu: '燕麦棒200g', sku: '百香果蔬菜', code: 'SYHB0970', createCost: '', costBefore: 8.57, rebateRate: 0.25 },
+      { category: '烘焙类', spu: '燕麦棒200g', sku: '坚果燕麦酥酥', code: 'SYHB0987', createCost: '', costBefore: 8.61, rebateRate: 0.25 }
     ],
     packageCosts: [
       { name: '气泡膜-亚光膜气泡袋45白', size: '350*450+40mm', code: '12110013661-0', whPrice: 0.61, jnPrice: 0.70, avgPrice: 0.66, weight: '0g<G<500g', expressPrice: 1.7486 },
       { name: '气泡膜-亚光膜气泡袋26白', size: '320*265+40mm', code: '12110013660-0', whPrice: 0.34, jnPrice: 0.42, avgPrice: 0.38, weight: '500g<G<1000g', expressPrice: 1.9637 },
-      { name: '10号纸箱', size: '48.5cm*40cm*18cm', code: 'SYZX10#', whPrice: 3.70, jnPrice: 3.70, avgPrice: 3.70, weight: '1000g<G<2000g', expressPrice: 3.0206 }
+      { name: '10号纸箱', size: '48.5cm*40cm*18cm', code: 'SYZX10#', whPrice: 3.70, jnPrice: 3.70, avgPrice: 3.70, weight: '1000g<G<2000g', expressPrice: 3.0206 },
+      { name: '5号纸箱', size: '41cm*31cm*19cm', code: 'SYZX05#', whPrice: 2.57, jnPrice: 2.55, avgPrice: 2.56, weight: '2000g<G<3000g', expressPrice: 4.1723 },
+      { name: '3号纸箱', size: '33cm*25cm*17cm', code: 'SYZX03#', whPrice: 1.60, jnPrice: 1.60, avgPrice: 1.60, weight: '3000g<G<4000g', expressPrice: 6.6977 },
+      { name: '气泡膜-亚光膜气泡袋30白', size: '300*350+40mm', code: '12110013662-0', whPrice: 0.42, jnPrice: 0.50, avgPrice: 0.46, weight: '4000g<G<5000g', expressPrice: 8.9503 },
+      { name: '气泡膜-亚光膜气泡袋22白', size: '250*300+40mm', code: '12110013663-0', whPrice: 0.26, jnPrice: 0.33, avgPrice: 0.30, weight: '5000g<G<6000g', expressPrice: 10.8824 },
+      { name: '气泡膜-亚光膜气泡袋18白', size: '200*250+40mm', code: '12110013664-0', whPrice: 0.19, jnPrice: 0.24, avgPrice: 0.22, weight: '6000g<G<7000g', expressPrice: 13.0408 },
+      { name: '气泡膜-亚光膜气泡袋15白', size: '150*200+40mm', code: '12110013665-0', whPrice: 0.13, jnPrice: 0.17, avgPrice: 0.15, weight: '7000g<G<8000g', expressPrice: 14.9729 },
+      { name: '气泡膜-亚光膜气泡袋10白', size: '100*150+40mm', code: '12110013666-0', whPrice: 0.08, jnPrice: 0.11, avgPrice: 0.10, weight: '8000g<G<9000g', expressPrice: 16.9050 },
+      { name: '淘宝标准5号箱', size: '29cm*17cm*19cm', code: 'SYZX5#', whPrice: 0.99, jnPrice: 0.99, avgPrice: 0.99, weight: '9000g<G<10000g', expressPrice: 18.8371 },
+      { name: '淘宝标准3号箱', size: '33cm*25cm*17cm', code: 'SYZX3#', whPrice: 1.60, jnPrice: 1.60, avgPrice: 1.60, weight: '10000g<G<11000g', expressPrice: 20.7692 },
+      { name: '1号油醋汁纸箱', size: '22cm*7.5cm*7.5cm', code: 'SYZX YCZ1', whPrice: 0.55, jnPrice: 0.37, avgPrice: 0.46, weight: '', expressPrice: '' },
+      { name: '咖啡纸箱', size: '14cm*11cm*11.5cm', code: '12100013534.0', whPrice: 0.31, jnPrice: 0.31, avgPrice: 0.31, weight: '', expressPrice: '' },
+      { name: '淘宝标准10号箱', size: '175*95*115mm', code: '12100013653-0', whPrice: 0.35, jnPrice: 0.35, avgPrice: 0.35, weight: '', expressPrice: '' }
     ]
   };
+}
+
+function calcCostAfter(item) {
+  var cb = parseFloat(item.costBefore);
+  var rr = parseFloat(item.rebateRate);
+  if (!isNaN(cb) && !isNaN(rr)) {
+    return (cb * (1 - rr)).toFixed(2);
+  }
+  return '';
 }
 
 function calculateSKU(sku) {
@@ -325,14 +226,9 @@ function calculateSKU(sku) {
   var expressCostRate = price > 0 ? (sku.expressCost || 0) / price : 0;
   var operateCostRate = price > 0 ? (sku.operateCost || 0) / price : 0;
   var totalStorageRate = packageCostRate + expressCostRate + operateCostRate;
-  var cr = sku.commissionRate || 0;
-  var tr = sku.taxRate || 0;
-  var pf = sku.platformFeeRate || 0;
-  var sr = sku.sampleRate || 0;
-  var ar = sku.afterSaleRate || 0;
-  var ir = sku.insuranceRate || 0;
-  var lr = sku.laborRate || 0;
-  var pcr = sku.paidCommissionRate || 0;
+  var cr = sku.commissionRate || 0, tr = sku.taxRate || 0, pf = sku.platformFeeRate || 0;
+  var sr = sku.sampleRate || 0, ar = sku.afterSaleRate || 0, ir = sku.insuranceRate || 0;
+  var lr = sku.laborRate || 0, pcr = sku.paidCommissionRate || 0;
   var marginNoLaborNormal = 1 - productCostRate - totalStorageRate - cr - tr - pf - sr - ar - ir;
   var marginNoLaborNoCommission = 1 - productCostRate - totalStorageRate - tr - pf - sr - ar - ir;
   var marginWithLaborNormal = 1 - productCostRate - totalStorageRate - cr - tr - pf - sr - ar - ir - lr;
@@ -351,13 +247,7 @@ function calculateSKU(sku) {
     var be2 = price * Math.abs(marginWithLaborNoCommission);
     cardRatioWithLabor = loss2 / be2 / (1 + loss2 / be2);
   } else cardRatioWithLabor = null;
-  return {
-    unitPrice: unitPrice, productCostRate: productCostRate, packageCostRate: packageCostRate,
-    expressCostRate: expressCostRate, operateCostRate: operateCostRate, totalStorageRate: totalStorageRate,
-    marginNoLaborNormal: marginNoLaborNormal, marginNoLaborNoCommission: marginNoLaborNoCommission,
-    marginWithLaborNormal: marginWithLaborNormal, marginWithLaborNoCommission: marginWithLaborNoCommission,
-    selfRoi: selfRoi, coopRoi: coopRoi, cardRatioNoLabor: cardRatioNoLabor, cardRatioWithLabor: cardRatioWithLabor
-  };
+  return { unitPrice: unitPrice, productCostRate: productCostRate, packageCostRate: packageCostRate, expressCostRate: expressCostRate, operateCostRate: operateCostRate, totalStorageRate: totalStorageRate, marginNoLaborNormal: marginNoLaborNormal, marginNoLaborNoCommission: marginNoLaborNoCommission, marginWithLaborNormal: marginWithLaborNormal, marginWithLaborNoCommission: marginWithLaborNoCommission, selfRoi: selfRoi, coopRoi: coopRoi, cardRatioNoLabor: cardRatioNoLabor, cardRatioWithLabor: cardRatioWithLabor };
 }
 
 function fmtPct(v) { return (v * 100).toFixed(2) + '%'; }
@@ -380,41 +270,33 @@ function render() {
 }
 
 function renderPricingSheet() {
-  var product = data.products[currentProductIndex];
+  var html = '<div class="product-selector"><label>选择产品:</label><select id="productSelect" onchange="onProductChange(this.value)">';
+  html += '<option value="">-- 请选择产品 --</option>';
+  data.products.forEach(function(p, i) {
+    html += '<option value="' + i + '"' + (selectedProduct === String(i) ? ' selected' : '') + '>' + p.name + '</option>';
+  });
+  html += '</select></div>';
+
+  var product = data.products[parseInt(selectedProduct)];
   if (!product) {
-    document.getElementById('mainContent').innerHTML = '<div style="text-align:center;padding:60px;color:var(--muted);">暂无产品，请点击右上角"新增产品"</div>';
+    html += '<div style="text-align:center;padding:60px;color:var(--muted);">请从上方下拉框选择一个产品</div>';
+    document.getElementById('mainContent').innerHTML = html;
     return;
   }
+
   var cols = [
-    { w: '40px', label: '' },
-    { w: '140px', label: '商品名称' },
-    { w: '60px', label: 'SKU规格' },
-    { w: '70px', label: '售价' },
-    { w: '70px', label: '件单价' },
-    { w: '70px', label: '产品成本' },
-    { w: '65px', label: '产品成本占比' },
-    { w: '70px', label: '包装成本' },
-    { w: '60px', label: '包装占比' },
-    { w: '70px', label: '快递成本' },
-    { w: '60px', label: '快递占比' },
-    { w: '70px', label: '操作费' },
-    { w: '65px', label: '操作费占比' },
-    { w: '70px', label: '总仓储占比' },
-    { w: '60px', label: '佣金率' },
-    { w: '60px', label: '经营税率' },
-    { w: '65px', label: '平台服务费' },
-    { w: '60px', label: '样品占比' },
-    { w: '60px', label: '售后占比' },
-    { w: '60px', label: '运费险' },
-    { w: '80px', label: '毛利率(未含人工)' },
-    { w: '80px', label: '毛利率(含人工)' },
-    { w: '60px', label: '人工成本' },
-    { w: '60px', label: '自营ROI' },
-    { w: '70px', label: '付费佣金率' },
-    { w: '60px', label: '合作ROI' }
+    { w: '40px', label: '' }, { w: '140px', label: '商品名称' }, { w: '60px', label: 'SKU规格' },
+    { w: '70px', label: '售价' }, { w: '70px', label: '件单价' }, { w: '70px', label: '产品成本' },
+    { w: '65px', label: '产品成本占比' }, { w: '70px', label: '包装成本' }, { w: '60px', label: '包装占比' },
+    { w: '70px', label: '快递成本' }, { w: '60px', label: '快递占比' }, { w: '70px', label: '操作费' },
+    { w: '65px', label: '操作费占比' }, { w: '70px', label: '总仓储占比' }, { w: '60px', label: '佣金率' },
+    { w: '60px', label: '经营税率' }, { w: '65px', label: '平台服务费' }, { w: '60px', label: '样品占比' },
+    { w: '60px', label: '售后占比' }, { w: '60px', label: '运费险' }, { w: '80px', label: '毛利率(未含人工)' },
+    { w: '80px', label: '毛利率(含人工)' }, { w: '60px', label: '人工成本' }, { w: '60px', label: '自营ROI' },
+    { w: '70px', label: '付费佣金率' }, { w: '60px', label: '合作ROI' }
   ];
   var colWidths = cols.map(function(c) { return c.w; }).join(' ');
-  var html = '<div class="spreadsheet-container"><div class="spreadsheet-grid" style="grid-template-columns:' + colWidths + ';">';
+  html += '<div class="spreadsheet-container"><div class="spreadsheet-grid" style="grid-template-columns:' + colWidths + ';">';
   cols.forEach(function(c, i) {
     html += '<div class="cell header ' + (i === 0 ? 'header-row' : '') + '">' + c.label + '</div>';
   });
@@ -463,8 +345,14 @@ function renderPricingSheet() {
   document.getElementById('mainContent').innerHTML = html;
 }
 
+function onProductChange(val) {
+  selectedProduct = val;
+  selectedRow = null;
+  renderPricingSheet();
+}
+
 function updateSKU(idx, field, value) {
-  var product = data.products[currentProductIndex];
+  var product = data.products[parseInt(selectedProduct)];
   if (!product) return;
   var num = parseFloat(value);
   product.skus[idx][field] = isNaN(num) ? 0 : num;
@@ -477,12 +365,15 @@ function selectRow(idx) {
   renderPricingSheet();
 }
 
-function addSKU() { document.getElementById('addSKUModal').classList.add('show'); }
+function addSKU() {
+  if (!selectedProduct) { showToast('请先选择一个产品'); return; }
+  document.getElementById('addSKUModal').classList.add('show');
+}
 
 function confirmAddSKU() {
   var spec = parseInt(document.getElementById('newSkuSpec').value) || 1;
   var price = parseFloat(document.getElementById('newSkuPrice').value) || 19.9;
-  var product = data.products[currentProductIndex];
+  var product = data.products[parseInt(selectedProduct)];
   if (!product) return;
   var last = product.skus[product.skus.length - 1];
   var newSku = {
@@ -502,7 +393,7 @@ function confirmAddSKU() {
 }
 
 function duplicateLastSKU() {
-  var product = data.products[currentProductIndex];
+  var product = data.products[parseInt(selectedProduct)];
   if (!product || product.skus.length === 0) return;
   var last = JSON.parse(JSON.stringify(product.skus[product.skus.length - 1]));
   product.skus.push(last);
@@ -512,7 +403,7 @@ function duplicateLastSKU() {
 }
 
 function deleteSelectedSKU() {
-  var product = data.products[currentProductIndex];
+  var product = data.products[parseInt(selectedProduct)];
   if (!product || selectedRow === null) { showToast('请先点击行号选中一行'); return; }
   product.skus.splice(selectedRow, 1);
   selectedRow = null;
@@ -523,18 +414,19 @@ function deleteSelectedSKU() {
 
 function renderProductCostSheet() {
   var html = '<div class="data-table-container"><table class="data-table"><thead><tr>';
-  html += '<th>产品品类</th><th>产品SPU</th><th>产品SKU</th><th>单品编码</th><th>创品集成本</th><th>产品成本(返点后)</th><th>产品成本(返点前)</th><th>返点率</th><th>操作</th>';
+  html += '<th>产品品类</th><th>产品SPU</th><th>产品SKU</th><th>单品编码</th><th>创品集成本</th><th>产品成本(返点前)</th><th>返点率</th><th>产品成本(返点后)</th><th>操作</th>';
   html += '</tr></thead><tbody>';
   data.productCosts.forEach(function(item, idx) {
+    var costAfter = calcCostAfter(item);
     html += '<tr>';
     html += '<td><input value="' + item.category + '" onchange="updateProductCost(' + idx + ',\'category\',this.value)"></td>';
     html += '<td><input value="' + item.spu + '" onchange="updateProductCost(' + idx + ',\'spu\',this.value)"></td>';
     html += '<td><input value="' + item.sku + '" onchange="updateProductCost(' + idx + ',\'sku\',this.value)"></td>';
     html += '<td><input value="' + item.code + '" onchange="updateProductCost(' + idx + ',\'code\',this.value)"></td>';
     html += '<td><input type="number" step="0.01" value="' + item.createCost + '" onchange="updateProductCost(' + idx + ',\'createCost\',this.value)"></td>';
-    html += '<td><input type="number" step="0.01" value="' + item.costAfter + '" onchange="updateProductCost(' + idx + ',\'costAfter\',this.value)"></td>';
     html += '<td><input type="number" step="0.01" value="' + item.costBefore + '" onchange="updateProductCost(' + idx + ',\'costBefore\',this.value)"></td>';
     html += '<td><input value="' + (item.rebateRate * 100).toFixed(0) + '%" onchange="updateProductCostRate(' + idx + ',this.value)"></td>';
+    html += '<td class="formula-cell">' + costAfter + '</td>';
     html += '<td><button class="btn btn-danger btn-sm" onclick="deleteProductCost(' + idx + ')">删除</button></td>';
     html += '</tr>';
   });
@@ -544,19 +436,21 @@ function renderProductCostSheet() {
 }
 
 function updateProductCost(idx, field, value) {
-  if (field === 'createCost' || field === 'costAfter' || field === 'costBefore') {
+  if (field === 'createCost' || field === 'costBefore') {
     data.productCosts[idx][field] = parseFloat(value) || '';
   } else {
     data.productCosts[idx][field] = value;
   }
   saveData();
+  renderProductCostSheet();
 }
 function updateProductCostRate(idx, value) {
   data.productCosts[idx].rebateRate = parseFloat(value.replace('%', '')) / 100 || 0;
   saveData();
+  renderProductCostSheet();
 }
 function addProductCostRow() {
-  data.productCosts.push({ category: '', spu: '', sku: '', code: '', createCost: '', costAfter: '', costBefore: '', rebateRate: 0 });
+  data.productCosts.push({ category: '', spu: '', sku: '', code: '', createCost: '', costBefore: '', rebateRate: 0 });
   saveData();
   renderProductCostSheet();
 }
@@ -595,6 +489,7 @@ function updatePackageCost(idx, field, value) {
     data.packageCosts[idx][field] = value;
   }
   saveData();
+  renderPackageCostSheet();
 }
 function addPackageCostRow() {
   data.packageCosts.push({ name: '', size: '', code: '', whPrice: 0, jnPrice: 0, avgPrice: 0, weight: '', expressPrice: 0 });
@@ -607,62 +502,7 @@ function deletePackageCost(idx) {
   renderPackageCostSheet();
 }
 
-function renderProductTabs() {
-  var tabsContainer = document.getElementById('sheetTabs');
-  var fixedTabs = Array.from(tabsContainer.querySelectorAll('.sheet-tab:not(.product-tab)')).slice(0, 3);
-  tabsContainer.innerHTML = '';
-  fixedTabs.forEach(function(t) { tabsContainer.appendChild(t); });
-  data.products.forEach(function(product, idx) {
-    var tab = document.createElement('button');
-    tab.className = 'sheet-tab product-tab';
-    tab.innerHTML = product.name + ' <span class="tab-close" onclick="event.stopPropagation();deleteProduct(' + idx + ')">x</span>';
-    tab.onclick = function() {
-      currentSheet = 'pricing';
-      currentProductIndex = idx;
-      document.querySelectorAll('.sheet-tab').forEach(function(t) { t.classList.remove('active'); });
-      tab.classList.add('active');
-      render();
-    };
-    tabsContainer.appendChild(tab);
-  });
-  var addBtn = document.createElement('button');
-  addBtn.className = 'sheet-tab add-sheet';
-  addBtn.textContent = '+';
-  addBtn.onclick = showAddProductModal;
-  tabsContainer.appendChild(addBtn);
-}
-
-function showAddProductModal() {
-  document.getElementById('addProductModal').classList.add('show');
-  document.getElementById('newProductName').value = '';
-  document.getElementById('newProductName').focus();
-}
-
-function confirmAddProduct() {
-  var name = document.getElementById('newProductName').value.trim();
-  if (!name) return;
-  data.products.push({ name: name, skus: [] });
-  currentProductIndex = data.products.length - 1;
-  currentSheet = 'pricing';
-  saveData();
-  closeModal('addProductModal');
-  renderProductTabs();
-  render();
-  showToast('产品添加成功');
-}
-
-function deleteProduct(idx) {
-  if (data.products.length <= 1) { showToast('至少保留一个产品'); return; }
-  data.products.splice(idx, 1);
-  if (currentProductIndex >= data.products.length) currentProductIndex = data.products.length - 1;
-  saveData();
-  renderProductTabs();
-  render();
-  showToast('产品已删除');
-}
-
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-
 function showToast(msg) {
   var toast = document.getElementById('toast');
   toast.textContent = msg;
@@ -691,7 +531,6 @@ function importData(input) {
       if (imported.products && imported.productCosts && imported.packageCosts) {
         data = imported;
         saveData();
-        renderProductTabs();
         render();
         showToast('数据导入成功');
       } else { showToast('数据格式不正确'); }
@@ -701,15 +540,13 @@ function importData(input) {
   input.value = '';
 }
 
-function init() { renderProductTabs(); render(); }
-
+function init() { render(); }
 document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
   overlay.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('show'); });
 });
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') { document.querySelectorAll('.modal-overlay').forEach(function(m) { m.classList.remove('show'); }); }
 });
-
 init();
 </script>
 </body>
